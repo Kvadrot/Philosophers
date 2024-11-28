@@ -1,0 +1,2 @@
+# Ignore the object directory (if you have a specific directory for .o files)
+obj/
