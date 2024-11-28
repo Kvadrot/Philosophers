@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/11/28 20:26:35 by ufo              ###   ########.fr       */
+/*   Updated: 2024/11/28 20:48:03 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,5 +40,10 @@ typedef struct s_config {
     int meals_number;
     t_philo *philo_list;
 } t_config;
+
+//validation helpers
+bool	ft_isdigit(int someInt);
+bool    ft_validate_input(char **argv);
+void    ft_print_default_input_error_number(void);
 
 #endif
