@@ -12,49 +12,45 @@
 
 # include "../main_header.h"
 
-void    ft_clean_up_philo_list(t_philo **philo)
-{
-    t_philo *next_philo;
-    t_philo *temp_philo;
-
-    temp_philo = *philo;
-    while (temp_philo->prev != NULL)
-        temp_philo = temp_philo->next;
-    temp_philo = *philo;
-    while (temp_philo)
-    {
-        next_philo = temp_philo->next;
-        free(temp_philo);
-        temp_philo = next_philo;
-    }
+void ft_clean_up_philo_list(t_philo **philo) {
+    t_philo *temp;
+    t_philo *next;
+    
+    if (!philo || !(*philo))
+        return;
+    temp = *philo;
+    do {
+        next = temp->next;
+        free(temp);
+        temp = next;
+    } while (temp != *philo);
+    *philo = NULL;
 }
 
-t_philo *ft_init_philo(t_config *config, t_philo *prev_philo)
-{
+
+t_philo *ft_init_philo(t_config *config, t_philo *prev_philo) {
     t_philo *philo;
+
     if (!config)
         return (NULL);
-    philo = malloc(sizeof(t_philo) * 1);
+    philo = malloc(sizeof(t_philo));
     if (!philo)
         return (NULL);
     philo->time_to_eat = config->time_to_eat;
-    philo->time_to_die = config->time_to_eat;
+    philo->time_to_die = config->time_to_die; // Corrected typo
     philo->time_to_sleep = config->time_to_sleep;
     philo->meals_number = config->meals_number;
-    if (prev_philo == NULL)
-        philo->prev = NULL;
-    else
-        philo->prev = NULL;
+    philo->prev = prev_philo;
     philo->next = NULL;
     return (philo);
 }
 
-t_philo *ft_get_philo_list(t_config *config)
-{
+
+t_philo *ft_get_philo_list(t_config *config) {
     t_philo *philo_list;
     t_philo *temp_philo;
-    
     int i;
+
     if (!config)
         return (NULL);
     i = 1;
@@ -62,19 +58,20 @@ t_philo *ft_get_philo_list(t_config *config)
     if (!philo_list)
         return (NULL);
     temp_philo = philo_list;
-    while (i < config->meals_number)
-    {
+    while (i < config->philo_number) {
         temp_philo->next = ft_init_philo(config, temp_philo);
-        if (!temp_philo)
-        {
-            ft_clean_up_philo_list(&temp_philo);
+        if (!temp_philo->next) {
+            ft_clean_up_philo_list(&philo_list);
             return (NULL);
         }
         temp_philo = temp_philo->next;
         i++;
     }
+    temp_philo->next = philo_list;
+    philo_list->prev = temp_philo;
     return (philo_list);
 }
+
 
 t_config *ft_init_config(char **argv)
 {
