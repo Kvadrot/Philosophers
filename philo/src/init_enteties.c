@@ -73,24 +73,25 @@ t_philo *ft_get_philo_list(t_config *config) {
 }
 
 
-t_config *ft_init_config(char **argv)
-{
-    t_config   *config;
+t_config *ft_init_config(char **argv) {
+    t_config *config;
 
-    config = malloc(sizeof(t_config) * 1);
+    config = malloc(sizeof(t_config));
     if (!config)
         return (NULL);
     config->philo_number = atoi(argv[1]);
     config->time_to_eat = atoi(argv[2]);
     config->time_to_die = atoi(argv[3]);
     config->time_to_sleep = atoi(argv[4]);
-    if (argv[5])
+    if (argv[5] != NULL)
         config->meals_number = atoi(argv[5]);
     else
-        config->meals_number = 1;
-    config->philo_list = NULL;
+        config->meals_number = 0; // Default to 0 for unlimited meals
     config->philo_list = ft_get_philo_list(config);
-    printf("LOG PRINT: meals_number = %d \n", config->philo_list->meals_number);
-    return(config);
+    if (!config->philo_list) {
+        free(config);
+        return (NULL);
+    }
+    printf("LOG PRINT: meals_number = %d\n", config->meals_number);
+    return (config);
 }
-
