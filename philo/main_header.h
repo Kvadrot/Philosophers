@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/11/28 20:48:03 by ufo              ###   ########.fr       */
+/*   Updated: 2024/11/29 13:27:22 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,5 +45,10 @@ typedef struct s_config {
 bool	ft_isdigit(int someInt);
 bool    ft_validate_input(char **argv);
 void    ft_print_default_input_error_number(void);
+
+//init  enteties
+t_philo     *ft_init_philo(t_config *config, t_philo *prev_philo);
+void        ft_clean_up_philo_list(t_philo **philo);
+t_config    *ft_init_config(char **argv);
 
 #endif
