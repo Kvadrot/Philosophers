@@ -36,6 +36,10 @@ t_philo *ft_init_philo(t_config *config, t_philo *prev_philo) {
     philo = malloc(sizeof(t_philo));
     if (!philo)
         return (NULL);
+    if (prev_philo == NULL)
+        philo->id = 0;
+    else
+        philo->id = prev_philo->id + 1;
     philo->time_to_eat = config->time_to_eat;
     philo->time_to_die = config->time_to_die; // Corrected typo
     philo->time_to_sleep = config->time_to_sleep;
@@ -92,6 +96,6 @@ t_config *ft_init_config(char **argv) {
         free(config);
         return (NULL);
     }
-    printf("LOG PRINT: meals_number = %d\n", config->meals_number);
+    printf("LOG PRINT: philo.id = %d philo.meals = %d\n", config->philo_list->id, config->meals_number);
     return (config);
 }

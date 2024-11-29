@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/11/29 13:27:22 by ufo              ###   ########.fr       */
+/*   Updated: 2024/11/29 16:13:31 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 typedef struct s_philo t_philo;
 
 typedef struct s_philo {
+    int id;
     int time_to_eat;
     int time_to_die;
     int time_to_sleep;
