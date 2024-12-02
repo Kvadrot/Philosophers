@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:08:18 by ufo               #+#    #+#             */
-/*   Updated: 2024/11/29 15:59:22 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/02 13:47:36 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,17 @@
 
 int ft_launch_simulation(t_config **config)
 {
+    t_philo *temp_philo;
+    temp_philo = (*config)->philo_list;
+    //Our philophers are cirlced so last is sitting next to the first philo
+    // thats why while (n-1.id < n.id)
+    while (temp_philo->prev->id < temp_philo->id)
+    {
+        
+        // temp_philo->philo_thread = pthread_create()
+        temp_philo = temp_philo->next;
+    }
+    printf("simulation is launched\n");
     return (200);
 }
 
@@ -34,6 +45,6 @@ int main(int argc, char **argv)
     main_config = ft_init_config(argv);
     if (!main_config)
         return(1);
-    // ft_launch_simulation();
+    ft_launch_simulation(&main_config);
     return (0);
 }

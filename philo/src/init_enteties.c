@@ -12,6 +12,11 @@
 
 # include "../main_header.h"
 
+pthread_mutex_t *ft_init()
+{
+
+}
+
 void ft_clean_up_philo_list(t_philo **philo) {
     t_philo *temp;
     t_philo *next;
@@ -41,9 +46,13 @@ t_philo *ft_init_philo(t_config *config, t_philo *prev_philo) {
     else
         philo->id = prev_philo->id + 1;
     philo->time_to_eat = config->time_to_eat;
-    philo->time_to_die = config->time_to_die; // Corrected typo
+    philo->time_to_die = config->time_to_die;
     philo->time_to_sleep = config->time_to_sleep;
-    philo->meals_number = config->meals_number;
+    philo->taken_meals_number = 0;
+    philo->is_dead = false;
+    philo->philo_thread = false;
+    philo->own_fork = NULL;
+    philo->neighbor_fork = NULL; 
     philo->prev = prev_philo;
     philo->next = NULL;
     return (philo);

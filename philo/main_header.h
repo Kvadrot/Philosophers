@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/11/29 16:13:31 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/02 13:43:53 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,17 @@
 typedef struct s_philo t_philo;
 
 typedef struct s_philo {
-    int id;
-    int time_to_eat;
-    int time_to_die;
-    int time_to_sleep;
-    int meals_number;
-    t_philo *next;
-    t_philo *prev;
+    int             id;
+    int             time_to_eat;
+    int             time_to_die;
+    int             time_to_sleep;
+    int             taken_meals_number;
+    bool            is_dead;
+    pthread_t       philo_thread;
+    pthread_mutex_t *own_fork;
+    pthread_mutex_t *neighbor_fork;
+    t_philo         *next;
+    t_philo         *prev;  
 } t_philo;
 
 typedef struct s_config {
