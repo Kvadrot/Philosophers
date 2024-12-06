@@ -12,9 +12,50 @@
 
 # include "../main_header.h"
 
-pthread_mutex_t *ft_init()
+void ft_clean_up_forks(pthread_mutex_t **mutex_arr, int created_num)
 {
+    int counter;
+    pthread_mutex_t temp_fork;
 
+    counter = 0;
+    temp_fork = (*mutex_arr)[0];
+    if (created_num == 1)
+    {
+        free(*mutex_arr);
+        free(mutex_arr);
+        return ;
+    }
+    while (created_num > counter)
+    {
+        pthread_mutex_destroy(&temp_fork);
+        temp_fork = (*mutex_arr)[counter];
+        counter++;
+    }
+    free(mutex_arr);
+}
+
+pthread_mutex_t *ft_init_forks(t_config **config)
+{
+    int counter;
+    pthread_mutex_t *mutex_arr;
+
+    counter = 0;
+    // Allocate memory for the mutex array
+    mutex_arr = malloc(sizeof(pthread_mutex_t) * (*config)->philo_number);
+    if (mutex_arr == NULL) // Correct pointer check
+        return (NULL);
+
+    // Initialize each mutex in the array
+    while (counter < (*config)->philo_number)
+    {
+        if (pthread_mutex_init(&mutex_arr[counter], NULL) != 0)
+        {
+            ft_clean_up_forks(&mutex_arr, counter); // Pass 'counter' as range
+            return (NULL);
+        }
+        counter++;
+    }
+    return (mutex_arr);
 }
 
 void ft_clean_up_philo_list(t_philo **philo) {
@@ -45,9 +86,7 @@ t_philo *ft_init_philo(t_config *config, t_philo *prev_philo) {
         philo->id = 0;
     else
         philo->id = prev_philo->id + 1;
-    philo->time_to_eat = config->time_to_eat;
-    philo->time_to_die = config->time_to_die;
-    philo->time_to_sleep = config->time_to_sleep;
+    philo->root_config = config;
     philo->taken_meals_number = 0;
     philo->is_dead = false;
     philo->philo_thread = false;
@@ -59,7 +98,7 @@ t_philo *ft_init_philo(t_config *config, t_philo *prev_philo) {
 }
 
 
-t_philo *ft_get_philo_list(t_config *config) {
+t_philo *ft_init_philo_list(t_config *config) {
     t_philo *philo_list;
     t_philo *temp_philo;
     int i;
@@ -92,16 +131,32 @@ t_config *ft_init_config(char **argv) {
     config = malloc(sizeof(t_config));
     if (!config)
         return (NULL);
+    config->must_exit = false;
     config->philo_number = atoi(argv[1]);
     config->time_to_eat = atoi(argv[2]);
     config->time_to_die = atoi(argv[3]);
     config->time_to_sleep = atoi(argv[4]);
+    config->is_synchronized = false;
     if (argv[5] != NULL)
         config->meals_number = atoi(argv[5]);
     else
-        config->meals_number = 0; // Default to 0 for unlimited meals
-    config->philo_list = ft_get_philo_list(config);
+        config->meals_number = 1;
+    if (pthread_mutex_init(&(config->simulation_syncher), NULL) != 0)
+    {
+        free(config);
+        return (NULL);
+    }
+    config->forks = ft_init_forks(&config);
+    if (config->forks == NULL)
+    {
+        pthread_mutex_destroy(&(config->simulation_syncher));
+        free(config);
+        return (NULL);
+    }
+    config->philo_list = ft_init_philo_list(config);
     if (!config->philo_list) {
+        ft_clean_up_forks(&(config->forks), config->philo_number);
+        pthread_mutex_destroy(&(config->simulation_syncher));
         free(config);
         return (NULL);
     }

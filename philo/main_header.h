@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/02 13:43:53 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/06 18:09:28 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,9 @@
 # include <pthread.h>
 # include <stdbool.h>
 
+
 typedef struct s_philo t_philo;
+typedef struct s_config t_config;
 
 typedef struct s_philo {
     int             id;
@@ -30,6 +32,7 @@ typedef struct s_philo {
     int             time_to_sleep;
     int             taken_meals_number;
     bool            is_dead;
+    t_config        *root_config;
     pthread_t       philo_thread;
     pthread_mutex_t *own_fork;
     pthread_mutex_t *neighbor_fork;
@@ -43,7 +46,11 @@ typedef struct s_config {
     int time_to_die;
     int time_to_sleep;
     int meals_number;
-    t_philo *philo_list;
+    bool            must_exit;
+    bool            is_synchronized;
+    t_philo         *philo_list;
+    pthread_mutex_t simulation_syncher;
+    pthread_mutex_t *forks;
 } t_config;
 
 //validation helpers
