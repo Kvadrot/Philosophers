@@ -132,11 +132,12 @@ t_config *ft_init_config(char **argv) {
     if (!config)
         return (NULL);
     config->must_exit = false;
+    config->is_synchronized = false;
     config->philo_number = atoi(argv[1]);
     config->time_to_eat = atoi(argv[2]);
     config->time_to_die = atoi(argv[3]);
     config->time_to_sleep = atoi(argv[4]);
-    config->is_synchronized = false;
+
     if (argv[5] != NULL)
         config->meals_number = atoi(argv[5]);
     else
@@ -146,10 +147,18 @@ t_config *ft_init_config(char **argv) {
         free(config);
         return (NULL);
     }
+    if (pthread_mutex_init(&(config->must_exit_mutex), NULL) != 0)
+    {
+        pthread_mutex_destroy(&(config->simulation_syncher));
+        free(config);
+        return (NULL);
+    }
     config->forks = ft_init_forks(&config);
     if (config->forks == NULL)
     {
         pthread_mutex_destroy(&(config->simulation_syncher));
+        pthread_mutex_destroy(&(config->must_exit_mutex));
+
         free(config);
         return (NULL);
     }
@@ -157,9 +166,10 @@ t_config *ft_init_config(char **argv) {
     if (!config->philo_list) {
         ft_clean_up_forks(&(config->forks), config->philo_number);
         pthread_mutex_destroy(&(config->simulation_syncher));
+        pthread_mutex_destroy(&(config->must_exit_mutex));
         free(config);
         return (NULL);
     }
-    printf("LOG PRINT: philo.id = %d philo.meals = %d\n", config->philo_list->id, config->meals_number);
+    printf("LOG PRINT: config.philo_num = %d philo.meals = %d\n", config->philo_number, config->meals_number);
     return (config);
 }

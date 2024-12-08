@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/06 18:09:28 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/08 17:02:54 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ typedef struct s_config {
     bool            must_exit;
     bool            is_synchronized;
     t_philo         *philo_list;
+    pthread_mutex_t must_exit_mutex;
     pthread_mutex_t simulation_syncher;
     pthread_mutex_t *forks;
 } t_config;
@@ -62,5 +63,8 @@ void    ft_print_default_input_error_number(void);
 t_philo     *ft_init_philo(t_config *config, t_philo *prev_philo);
 void        ft_clean_up_philo_list(t_philo **philo);
 t_config    *ft_init_config(char **argv);
+
+//utils
+int ft_find_last_philo_id(t_config **config);
 
 #endif

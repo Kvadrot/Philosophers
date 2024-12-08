@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:08:18 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/06 18:25:32 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/08 17:18:00 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,24 @@ long get_elapsed_time(struct timeval start) {
 // Annotation
 //      We need this func until main thread ft_launch_simulation will create all threads
 // =================================================================================
-void    ft_synchronize_philosophers(t_config **config)
+void    ft_synchronize_philosophers(t_philo *philo)
 {
+    t_config *cp_config;
+    cp_config = philo->root_config;
     
+    while (1)
+    {
+        pthread_mutex_lock(&(cp_config)->must_exit_mutex);
+        printf("philo.id = %d, is waiting for sync\n", philo->id);
+        if (cp_config->must_exit == true)
+            exit(3);
+        pthread_mutex_unlock(&(cp_config)->must_exit_mutex);
+        
+        pthread_mutex_lock(&(cp_config)->simulation_syncher);
+        if (cp_config->is_synchronized == true)
+            break;
+        pthread_mutex_unlock(&(cp_config)->simulation_syncher);
+    }
 }
 
 // @MARK: ft_launch_simulation
@@ -52,6 +67,7 @@ void    ft_synchronize_philosophers(t_config **config)
  {
     t_philo *philo;
     philo = (t_philo *)arg;
+    ft_synchronize_philosophers(philo);
     while (1)
     {
         printf("philo %d is thinking \n", philo->id);
@@ -68,19 +84,25 @@ void    ft_synchronize_philosophers(t_config **config)
  }
 
 // @MARK: ft_cleanup_threads
-// =================================================================================
+// ================================================================================
 //  Descritption: make main-thread to wait for created threads to finish execution
 //  How_it_works:
 // 1) iterates through each created thread before current philo
 // =================================================================================
 //
-void ft_cleanup_threads(t_philo *start_philo, t_philo *current_philo)
+void ft_cleanup_threads(t_philo *start_philo, t_philo *current_philo, t_config **config)
 {
     t_philo *temp_philo;
-
+    t_config *cp_config;
+    cp_config = *config;
     temp_philo = start_philo;
 
     // Iterate through all philosophers up to the current one
+    pthread_mutex_lock(&(cp_config->must_exit_mutex));
+    cp_config->must_exit = true;
+    printf("LOG: ft_cleanup_threads was triggered, must_eixt is true");
+    pthread_mutex_unlock(&(cp_config->must_exit_mutex));
+
     while (temp_philo != current_philo)
     {
         if (temp_philo->philo_thread)
@@ -95,14 +117,13 @@ void ft_cleanup_threads(t_philo *start_philo, t_philo *current_philo)
  void ft_stop_simulation(t_config **config)
  {
     t_philo *temp_philo;
-    
     temp_philo = (*config)->philo_list;
-    while (temp_philo->prev->id < temp_philo->id)
+    while (temp_philo->next->id != 0)
     {
-        
         pthread_join(temp_philo->philo_thread, NULL);
         temp_philo = temp_philo->next;
     }
+    pthread_join(temp_philo->philo_thread, NULL);
  }
 
 // @MARK: ft_launch_simulation
@@ -112,28 +133,39 @@ void ft_cleanup_threads(t_philo *start_philo, t_philo *current_philo)
 // How_it_works:
 //      1) Creates threads(philosophers)
 //      2) Check philo num if there is only one philo starts special case 
-//      3) Synchronize philosophers to start executing at the same time
+//      3) Creates threads one by one;
+//      4) We have to launch one thread separatly to allow last thread to be started
+//      due to our while statement
+//      5) Swithes is_synchrozed to true as all threads are created.
 // =================================================================================
 //
 int ft_launch_simulation(t_config **config)
 {
     t_philo *temp_philo;
-    
     temp_philo = (*config)->philo_list;
     //Our philophers are cirlced so last is sitting next to the first philo
     // thats why while (n-1.id < n.id)
-    while (temp_philo->prev->id < temp_philo->id)
+    while (temp_philo->next->id != 0)
     {
+
        if (pthread_create(&(temp_philo->philo_thread), NULL, &(ft_routine), temp_philo) != 0)
        {
+            //TODO: terminate created threads
+            ft_cleanup_threads((*config)->philo_list, temp_philo, config);
             return (2);
        }
         temp_philo = temp_philo->next;
     }
-    printf("simulation is launched\n");
-
-    ft_stop_simulation(config);
-    printf("simulation is stopped\n");
+    if (pthread_create(&(temp_philo->philo_thread), NULL, &(ft_routine), temp_philo) != 0)
+    {
+        ft_cleanup_threads((*config)->philo_list, temp_philo, config);
+        return (2);
+    }
+    pthread_mutex_lock(&(*config)->must_exit_mutex);
+    (*config)->is_synchronized = true;
+    printf("LOG PRINT: simulation is successully launched \n");
+    pthread_mutex_unlock(&(*config)->must_exit_mutex);
+    
     return (0);
 }
 
