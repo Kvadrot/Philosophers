@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/08 17:02:54 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/09 15:29:51 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ typedef struct s_config {
     bool            must_exit;
     bool            is_synchronized;
     t_philo         *philo_list;
+    pthread_mutex_t print_mutex;
     pthread_mutex_t must_exit_mutex;
     pthread_mutex_t simulation_syncher;
     pthread_mutex_t *forks;

@@ -142,13 +142,21 @@ t_config *ft_init_config(char **argv) {
         config->meals_number = atoi(argv[5]);
     else
         config->meals_number = 1;
+    
+    if (pthread_mutex_init(&(config->print_mutex), NULL) != 0)
+    {
+        free(config);
+        return (NULL);
+    }
     if (pthread_mutex_init(&(config->simulation_syncher), NULL) != 0)
     {
+        pthread_mutex_destroy(&(config->print_mutex));
         free(config);
         return (NULL);
     }
     if (pthread_mutex_init(&(config->must_exit_mutex), NULL) != 0)
     {
+        pthread_mutex_destroy(&(config->print_mutex));
         pthread_mutex_destroy(&(config->simulation_syncher));
         free(config);
         return (NULL);
@@ -156,6 +164,7 @@ t_config *ft_init_config(char **argv) {
     config->forks = ft_init_forks(&config);
     if (config->forks == NULL)
     {
+        pthread_mutex_destroy(&(config->print_mutex));
         pthread_mutex_destroy(&(config->simulation_syncher));
         pthread_mutex_destroy(&(config->must_exit_mutex));
 
@@ -165,6 +174,7 @@ t_config *ft_init_config(char **argv) {
     config->philo_list = ft_init_philo_list(config);
     if (!config->philo_list) {
         ft_clean_up_forks(&(config->forks), config->philo_number);
+        pthread_mutex_destroy(&(config->print_mutex));
         pthread_mutex_destroy(&(config->simulation_syncher));
         pthread_mutex_destroy(&(config->must_exit_mutex));
         free(config);
