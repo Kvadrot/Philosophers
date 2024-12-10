@@ -131,13 +131,14 @@ t_config *ft_init_config(char **argv) {
     config = malloc(sizeof(t_config));
     if (!config)
         return (NULL);
+    memset(config, 0, sizeof(t_philo));
     config->must_exit = false;
     config->is_synchronized = false;
     config->philo_number = atoi(argv[1]);
     config->time_to_eat = atoi(argv[2]);
     config->time_to_die = atoi(argv[3]);
     config->time_to_sleep = atoi(argv[4]);
-
+    // memset(config->initial_time, 0 ,sizeof(config->initial_time));
     if (argv[5] != NULL)
         config->meals_number = atoi(argv[5]);
     else

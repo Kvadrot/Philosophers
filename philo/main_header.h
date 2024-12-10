@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/09 15:29:51 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/10 19:24:17 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,13 @@
 # include <string.h>
 # include <pthread.h>
 # include <stdbool.h>
+#include <string.h>
 
 
 typedef struct s_philo t_philo;
 typedef struct s_config t_config;
+struct timeval initial_time;
+
 
 typedef struct s_philo {
     int             id;
@@ -46,6 +49,7 @@ typedef struct s_config {
     int time_to_die;
     int time_to_sleep;
     int meals_number;
+    struct timeval  initial_time;
     bool            must_exit;
     bool            is_synchronized;
     t_philo         *philo_list;

@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:08:18 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/09 18:25:18 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/10 19:28:27 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@ long get_elapsed_time(struct timeval start) {
 
     return ((now.tv_sec - start.tv_sec) * 1000) + 
            ((now.tv_usec - start.tv_usec) / 1000);
+}
+
+void print_time(struct timeval *tv) {
+    printf("Time: %ld seconds, %d microseconds\n", tv->tv_sec, tv->tv_usec);
 }
 
 
@@ -33,54 +37,55 @@ long get_elapsed_time(struct timeval start) {
 // Annotation
 //      We need this func until main thread ft_launch_simulation will create all threads
 // =================================================================================
-void ft_synchronize_philosophers(t_philo *philo) {
+// void ft_synchronize_philosophers(t_philo *philo) {
+//     t_config *cp_config;
+//     cp_config = philo->root_config;
+//     while (1) {
+//         pthread_mutex_lock(&(cp_config->simulation_syncher));
+//         if (cp_config->is_synchronized) {
+//             pthread_mutex_unlock(&(cp_config->simulation_syncher));
+//             break;
+//         }
+//         pthread_mutex_unlock(&(cp_config->simulation_syncher));
+//         usleep(100); // Prevent busy-waiting
+//     }
+// }
+
+void ft_synchronize_philosophers(t_philo *philo)
+{
     t_config *cp_config;
     cp_config = philo->root_config;
-    while (1) {
+
+    while (1)
+    {
+        pthread_mutex_lock(&(cp_config->must_exit_mutex));
+        if (cp_config->must_exit == true)
+        {
+            pthread_mutex_unlock(&(cp_config->must_exit_mutex));
+            pthread_mutex_lock(&(cp_config->print_mutex));
+            printf("philo %d detected termination, exiting...\n", philo->id);
+            pthread_mutex_unlock(&(cp_config->print_mutex));
+            pthread_mutex_unlock(&(cp_config->must_exit_mutex));
+            exit(3);
+        }
+        pthread_mutex_unlock(&(cp_config->must_exit_mutex));
+        
         pthread_mutex_lock(&(cp_config->simulation_syncher));
-        if (cp_config->is_synchronized) {
+        if (cp_config->is_synchronized == true)
+        {
+            pthread_mutex_unlock(&(cp_config->simulation_syncher));
+
+            pthread_mutex_lock(&(cp_config->print_mutex));
+            printf("philo %d has started\n", philo->id);
+            pthread_mutex_unlock(&(cp_config->print_mutex));
             pthread_mutex_unlock(&(cp_config->simulation_syncher));
             break;
         }
         pthread_mutex_unlock(&(cp_config->simulation_syncher));
+
         usleep(100); // Prevent busy-waiting
     }
 }
-
-// void ft_synchronize_philosophers(t_philo *philo)
-// {
-//     t_config *cp_config;
-//     cp_config = philo->root_config;
-
-//     while (1)
-//     {
-//         pthread_mutex_lock(&(cp_config->must_exit_mutex));
-//         if (cp_config->must_exit == true)
-//         {
-//             pthread_mutex_unlock(&(cp_config->must_exit_mutex));
-//             pthread_mutex_lock(&(cp_config->print_mutex));
-//             printf("philo %d detected termination, exiting...\n", philo->id);
-//             pthread_mutex_unlock(&(cp_config->print_mutex));
-//             exit(3);
-//         }
-//         pthread_mutex_unlock(&(cp_config->must_exit_mutex));
-        
-//         pthread_mutex_lock(&(cp_config->simulation_syncher));
-//         if (cp_config->is_synchronized == true)
-//         {
-//             pthread_mutex_unlock(&(cp_config->simulation_syncher));
-
-//             pthread_mutex_lock(&(cp_config->print_mutex));
-//             printf("philo %d has started\n", philo->id);
-//             pthread_mutex_unlock(&(cp_config->print_mutex));
-            
-//             break;
-//         }
-//         pthread_mutex_unlock(&(cp_config->simulation_syncher));
-
-//         usleep(500); // Prevent busy-waiting
-//     }
-// }
 
 
 // @MARK: ft_launch_simulation
@@ -100,7 +105,7 @@ void ft_synchronize_philosophers(t_philo *philo) {
     t_philo *philo;
     philo = (t_philo *)arg;
     ft_synchronize_philosophers(philo);
-    while (i < 4)
+    while (i)
     {
         printf("philo %d is thinking \n", philo->id);
         usleep(10000);
@@ -197,6 +202,8 @@ int ft_launch_simulation(t_config **config)
     }
     pthread_mutex_lock(&(*config)->must_exit_mutex);
     (*config)->is_synchronized = true;
+    //svae launch time
+    gettimeofday(&((*config)->initial_time), NULL);
     printf("LOG PRINT: simulation is successully launched \n");
     pthread_mutex_unlock(&(*config)->must_exit_mutex);
     ft_stop_simulation(config);
@@ -224,7 +231,6 @@ int main(int argc, char **argv)
         printf("failed to laucnh simulation config doesnt exist \n");
         return(1);
     }
-
     ft_launch_simulation(&main_config);
     return (0);
 }

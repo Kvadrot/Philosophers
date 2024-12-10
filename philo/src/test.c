@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:59:18 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/04 12:36:10 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/10 19:06:20 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,19 +41,17 @@ void *incrementor_counter(void *arg)
 
 // int main(int argc, char **argv)
 // {
-//     t_test *test_data;
-//     pthread_t test_thread[2];
-//     test_data = malloc(sizeof(t_test));
-//     pthread_mutex_init(&(test_data->mutex), NULL);
-//     pthread_create(&test_thread[0], NULL, incrementor_counter, test_data);
-//     pthread_create(&test_thread[1], NULL, incrementor_counter, test_data);
+    // t_test *test_data;
+    // pthread_t test_thread[2];
+    // test_data = malloc(sizeof(t_test));
+    // pthread_mutex_init(&(test_data->mutex), NULL);
+    // pthread_create(&test_thread[0], NULL, incrementor_counter, test_data);
+    // pthread_create(&test_thread[1], NULL, incrementor_counter, test_data);
 
     
     
-//     pthread_join(test_thread[0], NULL);
-//     pthread_join(test_thread[1], NULL);
-//     pthread_mutex_destroy(&(test_data->mutex));
-
+    // pthread_join(test_thread[0], NULL);
+    // pthread_join(test_thread[1], NULL);
+    // pthread_mutex_destroy(&(test_data->mutex));
     
-//     return (0);
 // }
