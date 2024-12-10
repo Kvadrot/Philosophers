@@ -82,18 +82,19 @@ t_philo *ft_init_philo(t_config *config, t_philo *prev_philo) {
     philo = malloc(sizeof(t_philo));
     if (!philo)
         return (NULL);
+    memset(philo, 0, sizeof(t_philo));
     if (prev_philo == NULL)
         philo->id = 0;
     else
         philo->id = prev_philo->id + 1;
     philo->root_config = config;
-    philo->taken_meals_number = 0;
-    philo->is_dead = false;
-    philo->philo_thread = false;
-    philo->own_fork = NULL;
-    philo->neighbor_fork = NULL; 
-    philo->prev = prev_philo;
-    philo->next = NULL;
+    // philo->taken_meals_number = 0;
+    // philo->is_dead = false;
+    // philo->philo_thread = false;
+    // philo->own_fork = NULL;
+    // philo->neighbor_fork = NULL; 
+    // philo->prev = prev_philo;
+    // philo->next = NULL;
     return (philo);
 }
 

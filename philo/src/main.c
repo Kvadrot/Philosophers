@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:08:18 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/10 19:28:27 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/10 19:31:37 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,6 +176,7 @@ void ft_cleanup_threads(t_philo *start_philo, t_philo *current_philo, t_config *
 //      4) We have to launch one thread separatly to allow last thread to be started
 //      due to our while statement
 //      5) Swithes is_synchrozed to true as all threads are created.
+//      6) Init simulation launching time
 // =================================================================================
 //
 int ft_launch_simulation(t_config **config)
@@ -203,11 +204,10 @@ int ft_launch_simulation(t_config **config)
     pthread_mutex_lock(&(*config)->must_exit_mutex);
     (*config)->is_synchronized = true;
     //svae launch time
-    gettimeofday(&((*config)->initial_time), NULL);
     printf("LOG PRINT: simulation is successully launched \n");
     pthread_mutex_unlock(&(*config)->must_exit_mutex);
+    gettimeofday(&((*config)->initial_time), NULL);
     ft_stop_simulation(config);
-    
     return (0);
 }
 
