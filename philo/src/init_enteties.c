@@ -132,7 +132,7 @@ t_config *ft_init_config(char **argv) {
     config = malloc(sizeof(t_config));
     if (!config)
         return (NULL);
-    memset(config, 0, sizeof(t_philo));
+    memset(config, 0, sizeof(config));
     config->must_exit = false;
     config->is_synchronized = false;
     config->philo_number = atoi(argv[1]);
@@ -163,8 +163,8 @@ t_config *ft_init_config(char **argv) {
         free(config);
         return (NULL);
     }
-    config->forks = ft_init_forks(&config);
-    if (config->forks == NULL)
+    config->forks_arr = ft_init_forks(&config);
+    if (config->forks_arr == NULL)
     {
         pthread_mutex_destroy(&(config->print_mutex));
         pthread_mutex_destroy(&(config->simulation_syncher));
@@ -175,7 +175,7 @@ t_config *ft_init_config(char **argv) {
     }
     config->philo_list = ft_init_philo_list(config);
     if (!config->philo_list) {
-        ft_clean_up_forks(&(config->forks), config->philo_number);
+        ft_clean_up_forks(&(config->forks_arr), config->philo_number);
         pthread_mutex_destroy(&(config->print_mutex));
         pthread_mutex_destroy(&(config->simulation_syncher));
         pthread_mutex_destroy(&(config->must_exit_mutex));

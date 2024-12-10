@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/10 19:24:17 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/10 20:19:12 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct s_philo {
     pthread_t       philo_thread;
     pthread_mutex_t *own_fork;
     pthread_mutex_t *neighbor_fork;
+    struct timeval  last_meal_time;
     t_philo         *next;
     t_philo         *prev;  
 } t_philo;
@@ -56,7 +57,7 @@ typedef struct s_config {
     pthread_mutex_t print_mutex;
     pthread_mutex_t must_exit_mutex;
     pthread_mutex_t simulation_syncher;
-    pthread_mutex_t *forks;
+    pthread_mutex_t *forks_arr;
 } t_config;
 
 //validation helpers
