@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/10 20:19:12 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/14 11:47:29 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,14 @@ typedef struct s_philo t_philo;
 typedef struct s_config t_config;
 struct timeval initial_time;
 
+enum philo_routine
+{
+    FORK,
+    EAT,
+    SLEEP,
+    THINK,
+    DIE
+};
 
 typedef struct s_philo {
     int             id;
@@ -72,5 +80,9 @@ t_config    *ft_init_config(char **argv);
 
 //utils
 int ft_find_last_philo_id(t_config **config);
+
+
+//Time Master
+long ft_get_elapsed_time(struct timeval start);
 
 #endif

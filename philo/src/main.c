@@ -6,50 +6,11 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:08:18 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/10 21:33:43 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/14 12:48:13 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
  # include "../main_header.h"
-
-long get_elapsed_time(struct timeval start) {
-    struct timeval now;
-    gettimeofday(&now, NULL);
-
-    return ((now.tv_sec - start.tv_sec) * 1000) + 
-           ((now.tv_usec - start.tv_usec) / 1000);
-}
-
-void print_time(struct timeval *tv) {
-    printf("Time: %ld seconds, %d microseconds\n", tv->tv_sec, tv->tv_usec);
-}
-
-
-// @MARK: ft_launch_simulation
-// =================================================================================
-// Descritption: 
-//      Makes created threads to wait for creating others, to ensure in simultaneously
-//      launch of simulation;    
-// How_it_works:
-//      1) launch infinity loop with few if statements
-//      2) check for exit flag: config->must_exit
-//      3) check for synchronized flag: config->is_synchronized
-// Annotation
-//      We need this func until main thread ft_launch_simulation will create all threads
-// =================================================================================
-// void ft_synchronize_philosophers(t_philo *philo) {
-//     t_config *cp_config;
-//     cp_config = philo->root_config;
-//     while (1) {
-//         pthread_mutex_lock(&(cp_config->simulation_syncher));
-//         if (cp_config->is_synchronized) {
-//             pthread_mutex_unlock(&(cp_config->simulation_syncher));
-//             break;
-//         }
-//         pthread_mutex_unlock(&(cp_config->simulation_syncher));
-//         usleep(100); // Prevent busy-waiting
-//     }
-// }
 
 void ft_synchronize_philosophers(t_philo *philo)
 {
@@ -83,8 +44,29 @@ void ft_synchronize_philosophers(t_philo *philo)
         }
         pthread_mutex_unlock(&(cp_config->simulation_syncher));
 
-        usleep(100); // Prevent busy-waiting
+        usleep(1); // Prevent busy-waiting
     }
+}
+
+
+void    ft_print_master(t_philo *philo, int philo_state)
+{
+    pthread_mutex_t print_mutex;
+    long time_stamp;
+
+    print_mutex = philo->root_config->print_mutex;
+    time_stamp = ft_get_elapsed_time(philo->root_config->initial_time);
+    pthread_mutex_lock(&print_mutex);
+    if (philo_state == FORK)
+         printf("%ld %d hast taken a fork\n", time_stamp, philo->id);
+    if (philo_state == EAT)
+         printf("%ld %d is eating\n", time_stamp, philo->id);
+    if (philo_state == SLEEP)
+        printf("%ld %d is sleeping\n", time_stamp, philo->id);
+    if (philo_state == THINK)
+        printf("%ld %d is thinking\n", time_stamp, philo->id);
+
+    pthread_mutex_unlock(&print_mutex);
 }
 
 
@@ -105,20 +87,33 @@ void ft_synchronize_philosophers(t_philo *philo)
     t_philo *philo;
     philo = (t_philo *)arg;
     ft_synchronize_philosophers(philo);
-    while (i)
+    if (philo->id % 2 != 0)
     {
-        printf("philo %d is thinking \n", philo->id);
-        usleep(10000);
-        printf("philo %d has taken forks\n", philo->id);
-        usleep(10000);
-        printf("philo %d philo is eatting\n",  philo->id);
-        usleep(10000);
-        printf("philo %d has finished meal %d\n", philo->id, philo->taken_meals_number);
-        usleep(10000);
-        printf("philo %d, is sleeping\n", philo->id);
-        usleep(10000);
-        i++;
+        pthread_mutex_lock((philo->own_fork));
+        ft_print_master(philo, FORK);
+        pthread_mutex_lock((philo->neighbor_fork));
+        ft_print_master(philo, FORK);
+        
+        ft_print_master(philo, EAT);
+        usleep(philo->time_to_eat);
+        pthread_mutex_unlock((philo->neighbor_fork)); 
+        pthread_mutex_unlock((philo->own_fork));        
     }
+    // while (i)
+    // {
+    //     ft_print_master(philo, FORK);
+    //     printf("philo %d is thinking \n", philo->id);
+    //     usleep(10000);
+    //     printf("philo %d has taken forks\n", philo->id);
+    //     usleep(10000);
+    //     printf("philo %d philo is eatting\n",  philo->id);
+    //     usleep(10000);
+    //     printf("philo %d has finished meal %d\n", philo->id, philo->taken_meals_number);
+    //     usleep(10000);
+    //     printf("philo %d, is sleeping\n", philo->id);
+    //     usleep(10000);
+    //     i++;
+    // }
     return (0);
  }
 
@@ -201,11 +196,11 @@ int ft_launch_simulation(t_config **config)
         ft_cleanup_threads((*config)->philo_list, temp_philo, config);
         return (2);
     }
-    pthread_mutex_lock(&(*config)->must_exit_mutex);
+    pthread_mutex_lock(&(*config)->simulation_syncher);
     (*config)->is_synchronized = true;
     //svae launch time
     printf("LOG PRINT: simulation is successully launched \n");
-    pthread_mutex_unlock(&(*config)->must_exit_mutex);
+    pthread_mutex_unlock(&(*config)->simulation_syncher);
     gettimeofday(&((*config)->initial_time), NULL);
     ft_stop_simulation(config);
     return (0);

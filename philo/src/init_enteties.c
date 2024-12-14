@@ -99,7 +99,8 @@ t_philo *ft_init_philo(t_config *config, t_philo *prev_philo) {
 }
 
 
-t_philo *ft_init_philo_list(t_config *config) {
+t_philo *ft_init_philo_list(t_config *config)
+{
     t_philo *philo_list;
     t_philo *temp_philo;
     int i;
@@ -125,6 +126,24 @@ t_philo *ft_init_philo_list(t_config *config) {
     return (philo_list);
 }
 
+void ft_set_forks_for_philo(t_config **config)
+{
+    int i;
+    t_philo *temp_philo;
+    temp_philo = (*config)->philo_list;
+    i = 0;
+    while ((*config)->philo_number > i)
+    {
+        temp_philo->own_fork = &(*config)->forks_arr[i];
+        if (i == 0)
+            temp_philo->neighbor_fork = &(*config)->forks_arr[(*config)->philo_number - 1];
+        else 
+            temp_philo->neighbor_fork = &(*config)->forks_arr[i - 1];
+        temp_philo = temp_philo->next;
+        i++;
+    }
+
+}
 
 t_config *ft_init_config(char **argv) {
     t_config *config;
@@ -132,7 +151,7 @@ t_config *ft_init_config(char **argv) {
     config = malloc(sizeof(t_config));
     if (!config)
         return (NULL);
-    memset(config, 0, sizeof(config));
+    memset(config, 0, sizeof(t_config));
     config->must_exit = false;
     config->is_synchronized = false;
     config->philo_number = atoi(argv[1]);
@@ -182,6 +201,7 @@ t_config *ft_init_config(char **argv) {
         free(config);
         return (NULL);
     }
+    ft_set_forks_for_philo(&config);
     printf("LOG PRINT: config.philo_num = %d philo.meals = %d\n", config->philo_number, config->meals_number);
     return (config);
 }
