@@ -15,24 +15,21 @@
 void ft_clean_up_forks(pthread_mutex_t **mutex_arr, int created_num)
 {
     int counter;
-    pthread_mutex_t temp_fork;
+
+    if (!mutex_arr || !(*mutex_arr))
+        return;
 
     counter = 0;
-    temp_fork = (*mutex_arr)[0];
-    if (created_num == 1)
+    while (counter < created_num)
     {
-        free(*mutex_arr);
-        free(mutex_arr);
-        return ;
-    }
-    while (created_num > counter)
-    {
-        pthread_mutex_destroy(&temp_fork);
-        temp_fork = (*mutex_arr)[counter];
+        pthread_mutex_destroy(&((*mutex_arr)[counter]));
         counter++;
     }
-    free(mutex_arr);
+    if (*mutex_arr)
+        free(*mutex_arr); // Free the array of mutexes
+    *mutex_arr = NULL; // Optional: Nullify to avoid dangling pointer
 }
+
 
 pthread_mutex_t *ft_init_forks(t_config **config)
 {
@@ -58,20 +55,28 @@ pthread_mutex_t *ft_init_forks(t_config **config)
     return (mutex_arr);
 }
 
-void ft_clean_up_philo_list(t_philo **philo) {
+void ft_clean_up_philo_list(t_philo **philo)
+{
     t_philo *temp;
     t_philo *next;
-    
+
     if (!philo || !(*philo))
         return;
+
     temp = *philo;
-    do {
+    while (temp) {
         next = temp->next;
+        if (temp == *philo && temp != next) {
+            free(temp);
+            break;
+        }
+
         free(temp);
         temp = next;
-    } while (temp != *philo);
+    }
     *philo = NULL;
 }
+
 
 
 t_philo *ft_init_philo(t_config *config, t_philo *prev_philo) {

@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:08:18 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/14 12:48:13 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/14 20:28:43 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,75 +48,6 @@ void ft_synchronize_philosophers(t_philo *philo)
     }
 }
 
-
-void    ft_print_master(t_philo *philo, int philo_state)
-{
-    pthread_mutex_t print_mutex;
-    long time_stamp;
-
-    print_mutex = philo->root_config->print_mutex;
-    time_stamp = ft_get_elapsed_time(philo->root_config->initial_time);
-    pthread_mutex_lock(&print_mutex);
-    if (philo_state == FORK)
-         printf("%ld %d hast taken a fork\n", time_stamp, philo->id);
-    if (philo_state == EAT)
-         printf("%ld %d is eating\n", time_stamp, philo->id);
-    if (philo_state == SLEEP)
-        printf("%ld %d is sleeping\n", time_stamp, philo->id);
-    if (philo_state == THINK)
-        printf("%ld %d is thinking\n", time_stamp, philo->id);
-
-    pthread_mutex_unlock(&print_mutex);
-}
-
-
-// @MARK: ft_launch_simulation
-// =================================================================================
-// Descritption: 
-//      Simulates philo routine: eat -> think -> sleep
-// How_it_works:
-//      1) 
-//      2) 
-//      3) 
-// =================================================================================
-
- void *ft_routine(void *arg)
- {
-    int i;
-    i = 0;
-    t_philo *philo;
-    philo = (t_philo *)arg;
-    ft_synchronize_philosophers(philo);
-    if (philo->id % 2 != 0)
-    {
-        pthread_mutex_lock((philo->own_fork));
-        ft_print_master(philo, FORK);
-        pthread_mutex_lock((philo->neighbor_fork));
-        ft_print_master(philo, FORK);
-        
-        ft_print_master(philo, EAT);
-        usleep(philo->time_to_eat);
-        pthread_mutex_unlock((philo->neighbor_fork)); 
-        pthread_mutex_unlock((philo->own_fork));        
-    }
-    // while (i)
-    // {
-    //     ft_print_master(philo, FORK);
-    //     printf("philo %d is thinking \n", philo->id);
-    //     usleep(10000);
-    //     printf("philo %d has taken forks\n", philo->id);
-    //     usleep(10000);
-    //     printf("philo %d philo is eatting\n",  philo->id);
-    //     usleep(10000);
-    //     printf("philo %d has finished meal %d\n", philo->id, philo->taken_meals_number);
-    //     usleep(10000);
-    //     printf("philo %d, is sleeping\n", philo->id);
-    //     usleep(10000);
-    //     i++;
-    // }
-    return (0);
- }
-
 // @MARK: ft_cleanup_threads
 // ================================================================================
 //  Descritption: make main-thread to wait for created threads to finish execution
@@ -147,17 +78,27 @@ void ft_cleanup_threads(t_philo *start_philo, t_philo *current_philo, t_config *
     }
 }
 
-
+void    ft_destroy_simultion(t_config **config)
+{
+    printf("simulation is about to be destroyed\n");
+    ft_clean_up_philo_list(&(*config)->philo_list);
+    ft_clean_up_forks(&(*config)->forks_arr, (*config)->philo_number);
+    pthread_mutex_destroy(&(*config)->must_exit_mutex);
+    pthread_mutex_destroy(&(*config)->print_mutex);
+    printf("simulation is destroyed\n");
+}
  void ft_stop_simulation(t_config **config)
  {
     t_philo *temp_philo;
     temp_philo = (*config)->philo_list;
+    printf("LOG PRINT: ft_stop_simulation has been trigerred\n");
     while (temp_philo->next->id != 0)
     {
         pthread_join(temp_philo->philo_thread, NULL);
         temp_philo = temp_philo->next;
     }
     pthread_join(temp_philo->philo_thread, NULL);
+    ft_destroy_simultion(config);
  }
 
 // @MARK: ft_launch_simulation
@@ -202,9 +143,10 @@ int ft_launch_simulation(t_config **config)
     printf("LOG PRINT: simulation is successully launched \n");
     pthread_mutex_unlock(&(*config)->simulation_syncher);
     gettimeofday(&((*config)->initial_time), NULL);
-    ft_stop_simulation(config);
     return (0);
 }
+
+
 
 int main(int argc, char **argv)
 {
@@ -227,5 +169,6 @@ int main(int argc, char **argv)
         return(1);
     }
     ft_launch_simulation(&main_config);
+    ft_stop_simulation(&main_config);
     return (0);
 }
