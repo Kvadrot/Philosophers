@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 19:51:59 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/14 20:19:39 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/24 14:54:18 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void ft_eat_routine(t_philo *philo)
     ft_print_master(philo, FORK);
     
     ft_print_master(philo, EAT);
-    usleep(philo->time_to_eat);
+    usleep(philo->root_config->time_to_eat);
     pthread_mutex_unlock((philo->neighbor_fork)); 
     pthread_mutex_unlock((philo->own_fork));
 }
@@ -33,7 +33,7 @@ void ft_think_routine(t_philo *philo)
 void ft_sleep_routine(t_philo *philo)
 {
     ft_print_master(philo, SLEEP);
-    usleep(philo->time_to_sleep);
+    usleep(philo->root_config->time_to_sleep);
 }
 
 // @MARK: ft_launch_simulation

@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:08:18 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/14 20:28:43 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/24 14:53:01 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,13 +117,13 @@ void    ft_destroy_simultion(t_config **config)
 //
 int ft_launch_simulation(t_config **config)
 {
+    int     i;
     t_philo *temp_philo;
+
+    i = 0;
     temp_philo = (*config)->philo_list;
-    //Our philophers are cirlced so last is sitting next to the first philo
-    // thats why while (n-1.id < n.id)
-    while (temp_philo->next->id != 0)
+    while (i < (*config)->philo_number)
     {
-        printf("DEBUG: temp_phiilo_id = %d, has been created\n", temp_philo->id);
        if (pthread_create(&(temp_philo->philo_thread), NULL, &(ft_routine), temp_philo) != 0)
        {
             //TODO: terminate created threads
@@ -131,18 +131,15 @@ int ft_launch_simulation(t_config **config)
             return (2);
        }
         temp_philo = temp_philo->next;
+        i++;
     }
-    if (pthread_create(&(temp_philo->philo_thread), NULL, &(ft_routine), temp_philo) != 0)
-    {
-        ft_cleanup_threads((*config)->philo_list, temp_philo, config);
-        return (2);
-    }
+
+    //svae launch time
+    (*config)->initial_time = ft_get_now_stamp_mls();
     pthread_mutex_lock(&(*config)->simulation_syncher);
     (*config)->is_synchronized = true;
-    //svae launch time
-    printf("LOG PRINT: simulation is successully launched \n");
     pthread_mutex_unlock(&(*config)->simulation_syncher);
-    gettimeofday(&((*config)->initial_time), NULL);
+
     return (0);
 }
 

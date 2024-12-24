@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/14 20:21:16 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/24 14:48:48 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,16 +38,14 @@ enum philo_routine
 
 typedef struct s_philo {
     int             id;
-    int             time_to_eat;
-    int             time_to_die;
-    int             time_to_sleep;
     int             taken_meals_number;
-    bool            is_dead;
+    long long       last_meal_time;
     t_config        *root_config;
     pthread_t       philo_thread;
+    pthread_mutex_t last_meal_time_mutex;
+    pthread_mutex_t taken_meals_number_mutex;
     pthread_mutex_t *own_fork;
     pthread_mutex_t *neighbor_fork;
-    struct timeval  last_meal_time;
     t_philo         *next;
     t_philo         *prev;  
 } t_philo;
@@ -58,7 +56,7 @@ typedef struct s_config {
     int time_to_die;
     int time_to_sleep;
     int meals_number;
-    struct timeval  initial_time;
+    long long       initial_time;
     bool            must_exit;
     bool            is_synchronized;
     t_philo         *philo_list;
@@ -83,7 +81,8 @@ t_config    *ft_init_config(char **argv);
 void    ft_print_master(t_philo *philo, int philo_state);
 
 //Time Master
-long ft_get_elapsed_time(struct timeval start);
+long long   ft_get_now_stamp_mls(void);
+long long   ft_get_elapsed_time(long long start_time);
 
 //utils
 int ft_find_last_philo_id(t_config **config);
