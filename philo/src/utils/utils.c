@@ -6,11 +6,12 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:40:21 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/09 18:47:30 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/24 16:29:51 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
- # include "../main_header.h"
+# include "../../inc/main_header.h"
+
  
 
 // @MARK: ft_find_last_philo_id

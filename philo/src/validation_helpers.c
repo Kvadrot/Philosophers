@@ -6,11 +6,12 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 20:38:54 by ufo               #+#    #+#             */
-/*   Updated: 2024/11/28 20:39:44 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/24 16:30:08 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../main_header.h"
+# include "../inc/main_header.h"
+
 
 
 void    ft_print_default_input_error_number(void)

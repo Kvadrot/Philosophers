@@ -6,11 +6,12 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 19:55:12 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/14 19:55:48 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/24 16:29:44 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../main_header.h"
+# include "../../inc/main_header.h"
+
 
 
 void    ft_print_master(t_philo *philo, int philo_state)

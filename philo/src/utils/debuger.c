@@ -6,11 +6,12 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/24 14:23:04 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/24 15:02:00 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/24 16:29:41 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../main_header.h"
+# include "../../inc/main_header.h"
+
 
 void ft_print_after_init_enteties(t_config *config)
 {

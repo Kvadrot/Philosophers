@@ -6,11 +6,12 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:08:18 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/24 15:26:47 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/24 16:29:57 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
- # include "../main_header.h"
+# include "../inc/main_header.h"
+
  
 static bool ft_check_exit(t_config *config)
 {

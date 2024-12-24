@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../main_header.h"
+# include "../../inc/main_header.h"
 
 void ft_clean_up_forks(pthread_mutex_t **mutex_arr, int created_num)
 {
