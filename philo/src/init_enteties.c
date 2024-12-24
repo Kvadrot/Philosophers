@@ -203,5 +203,6 @@ t_config *ft_init_config(char **argv) {
     }
     ft_set_forks_for_philo(&config);
     printf("LOG PRINT: config.philo_num = %d philo.meals = %d\n", config->philo_number, config->meals_number);
+    ft_print_after_init_enteties(config);
     return (config);
 }

@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/24 14:48:48 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/24 15:00:17 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,5 +93,7 @@ void ft_synchronize_philosophers(t_philo *philo);
 //Routine
 void *ft_routine(void *arg);
 
+//Debugger
+void ft_print_after_init_enteties(t_config *config);
 
 #endif

@@ -6,11 +6,41 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:08:18 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/24 14:53:01 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/24 15:26:47 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
  # include "../main_header.h"
+ 
+static bool ft_check_exit(t_config *config)
+{
+    pthread_mutex_lock(&(config->must_exit_mutex));
+    if (config->must_exit == true)
+    {
+        pthread_mutex_unlock(&(config->must_exit_mutex));
+        // pthread_mutex_lock(&(config->print_mutex));
+        // printf("philo %d detected termination, exiting...\n", philo->id);
+        // pthread_mutex_unlock(&(cp_config->print_mutex));
+        return (true);
+    }
+    pthread_mutex_unlock(&(config->must_exit_mutex));
+    return (false);
+}
+
+static bool    ft_check_are_synchronized(t_config *config)
+{
+    pthread_mutex_lock(&(config->simulation_syncher));
+    if (config->is_synchronized == true)
+    {
+        pthread_mutex_unlock(&(config->simulation_syncher));
+        // pthread_mutex_lock(&(config->print_mutex));
+        // printf("philo %d has started\n", philo->id);
+        // pthread_mutex_unlock(&(config->print_mutex));
+        return (true);
+    }
+    pthread_mutex_unlock(&(config->simulation_syncher));
+    return (false);
+}
 
 void ft_synchronize_philosophers(t_philo *philo)
 {
@@ -19,31 +49,10 @@ void ft_synchronize_philosophers(t_philo *philo)
 
     while (1)
     {
-        pthread_mutex_lock(&(cp_config->must_exit_mutex));
-        if (cp_config->must_exit == true)
-        {
-            pthread_mutex_unlock(&(cp_config->must_exit_mutex));
-            pthread_mutex_lock(&(cp_config->print_mutex));
-            printf("philo %d detected termination, exiting...\n", philo->id);
-            pthread_mutex_unlock(&(cp_config->print_mutex));
-            pthread_mutex_unlock(&(cp_config->must_exit_mutex));
-            exit(3);
-        }
-        pthread_mutex_unlock(&(cp_config->must_exit_mutex));
-        
-        pthread_mutex_lock(&(cp_config->simulation_syncher));
-        if (cp_config->is_synchronized == true)
-        {
-            pthread_mutex_unlock(&(cp_config->simulation_syncher));
-
-            pthread_mutex_lock(&(cp_config->print_mutex));
-            printf("philo %d has started\n", philo->id);
-            pthread_mutex_unlock(&(cp_config->print_mutex));
-            pthread_mutex_unlock(&(cp_config->simulation_syncher));
+        if (ft_check_exit(cp_config) == true)
+            return ;
+        if (ft_check_are_synchronized(cp_config) == true)
             break;
-        }
-        pthread_mutex_unlock(&(cp_config->simulation_syncher));
-
         usleep(1); // Prevent busy-waiting
     }
 }
@@ -80,24 +89,25 @@ void ft_cleanup_threads(t_philo *start_philo, t_philo *current_philo, t_config *
 
 void    ft_destroy_simultion(t_config **config)
 {
-    printf("simulation is about to be destroyed\n");
     ft_clean_up_philo_list(&(*config)->philo_list);
     ft_clean_up_forks(&(*config)->forks_arr, (*config)->philo_number);
     pthread_mutex_destroy(&(*config)->must_exit_mutex);
     pthread_mutex_destroy(&(*config)->print_mutex);
-    printf("simulation is destroyed\n");
 }
  void ft_stop_simulation(t_config **config)
  {
+    int i;
+    
+    i = 0;
     t_philo *temp_philo;
     temp_philo = (*config)->philo_list;
-    printf("LOG PRINT: ft_stop_simulation has been trigerred\n");
-    while (temp_philo->next->id != 0)
+
+    while (i < (*config)->philo_number)
     {
         pthread_join(temp_philo->philo_thread, NULL);
         temp_philo = temp_philo->next;
+        i++;
     }
-    pthread_join(temp_philo->philo_thread, NULL);
     ft_destroy_simultion(config);
  }
 

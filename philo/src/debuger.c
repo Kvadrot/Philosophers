@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/24 14:23:04 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/24 14:35:43 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/24 15:02:00 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,19 @@ void ft_print_after_init_enteties(t_config *config)
         ///CHECK for left fork
         printf("has left_fork: ");
         if (temp_philo->own_fork != NULL)
-            printf("true");
+            printf("true ");
         else
-            printf("false");
+            printf("false ");
         
         ///CHECK for right fork
-        printf("has right_fork: ");
+        printf(",has right_fork: ");
         if (temp_philo->neighbor_fork != NULL)
-            printf("true");
+            printf("true ");
         else
-            printf("false");
+            printf("false ");
         printf("\n");
         temp_philo = temp_philo->next;
+        i++;
     }
     
     
