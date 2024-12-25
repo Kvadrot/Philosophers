@@ -6,13 +6,27 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:40:21 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/24 16:29:51 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/25 15:16:09 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../../inc/main_header.h"
 
- 
+  
+bool ft_check_exit(t_config *config)
+{
+    pthread_mutex_lock(&(config->must_exit_mutex));
+    if (config->must_exit == true)
+    {
+        pthread_mutex_unlock(&(config->must_exit_mutex));
+        // pthread_mutex_lock(&(config->print_mutex));
+        // printf("philo %d detected termination, exiting...\n", philo->id);
+        // pthread_mutex_unlock(&(cp_config->print_mutex));
+        return (true);
+    }
+    pthread_mutex_unlock(&(config->must_exit_mutex));
+    return (false);
+}
 
 // @MARK: ft_find_last_philo_id
 // =================================================================================

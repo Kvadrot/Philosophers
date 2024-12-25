@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:36:10 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/24 16:29:47 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/25 14:31:27 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 // @MARK: get_elapsed_time
 // =================================================================================
 // Descritption: 
-//      returns current time_stamp in mls (long long)
+//      returns current time_stamp in mls (long long) mls
 // How_it_works:
 // =================================================================================
 //
@@ -37,10 +37,15 @@ long long	ft_get_now_stamp_mls(void)
 // How_it_works:
 // =================================================================================
 //
-long long ft_get_elapsed_time(long long start_time)
+long long ft_get_elapsed_time(long long start_time_mls)
 {
     long long   now;
 
     now = ft_get_now_stamp_mls();
-    return (now - start_time);
+    return (now - start_time_mls);
+}
+
+long long	ft_convert_mls_into_mcrs(long long mls)
+{
+	return (mls * 1000);
 }

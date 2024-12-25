@@ -129,23 +129,43 @@ t_philo *ft_init_philo_list(t_config *config)
     return (philo_list);
 }
 
+// void ft_set_forks_for_philo(t_config **config)
+// {
+//     int i;
+//     t_philo *temp_philo;
+//     temp_philo = (*config)->philo_list;
+//     i = 0;
+//     while ((*config)->philo_number > i)
+//     {
+//         temp_philo->own_fork = &(*config)->forks_arr[i];
+//         if (i == 0)
+//             temp_philo->neighbor_fork = &(*config)->forks_arr[(*config)->philo_number - 1];
+//         else 
+//             temp_philo->neighbor_fork = &(*config)->forks_arr[i - 1];
+//         temp_philo = temp_philo->next;
+//         i++;
+//     }
+// }
+
 void ft_set_forks_for_philo(t_config **config)
 {
     int i;
     t_philo *temp_philo;
+
     temp_philo = (*config)->philo_list;
     i = 0;
     while ((*config)->philo_number > i)
     {
         temp_philo->own_fork = &(*config)->forks_arr[i];
-        if (i == 0)
-            temp_philo->neighbor_fork = &(*config)->forks_arr[(*config)->philo_number - 1];
-        else 
-            temp_philo->neighbor_fork = &(*config)->forks_arr[i - 1];
+        if (i == (*config)->philo_number - 1)
+            temp_philo->neighbor_fork = &(*config)->forks_arr[0]; // Last points to first
+        else
+            temp_philo->neighbor_fork = &(*config)->forks_arr[i + 1]; // Point to next fork
         temp_philo = temp_philo->next;
         i++;
     }
 }
+
 
 t_config *ft_init_config(char **argv) {
     t_config *config;

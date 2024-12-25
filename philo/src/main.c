@@ -6,27 +6,12 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:08:18 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/24 16:29:57 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/25 15:01:14 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../inc/main_header.h"
 
- 
-static bool ft_check_exit(t_config *config)
-{
-    pthread_mutex_lock(&(config->must_exit_mutex));
-    if (config->must_exit == true)
-    {
-        pthread_mutex_unlock(&(config->must_exit_mutex));
-        // pthread_mutex_lock(&(config->print_mutex));
-        // printf("philo %d detected termination, exiting...\n", philo->id);
-        // pthread_mutex_unlock(&(cp_config->print_mutex));
-        return (true);
-    }
-    pthread_mutex_unlock(&(config->must_exit_mutex));
-    return (false);
-}
 
 static bool    ft_check_are_synchronized(t_config *config)
 {
@@ -109,6 +94,7 @@ void    ft_destroy_simultion(t_config **config)
         temp_philo = temp_philo->next;
         i++;
     }
+    pthread_join((*config)->simulation_tracker_thread, NULL);
     ft_destroy_simultion(config);
  }
 
@@ -154,7 +140,15 @@ int ft_launch_simulation(t_config **config)
     return (0);
 }
 
-
+int ft_launch_simulation_tracker(t_config* config)
+{
+    if (pthread_create(&(config->simulation_tracker_thread), NULL, &(ft_track_simualtion), config) != 0)
+    {
+        ft_destroy_simultion(&config);
+        return (4);
+    }
+    return (0);
+}
 
 int main(int argc, char **argv)
 {
@@ -177,6 +171,7 @@ int main(int argc, char **argv)
         return(1);
     }
     ft_launch_simulation(&main_config);
+    ft_launch_simulation_tracker(main_config);
     ft_stop_simulation(&main_config);
     return (0);
 }
