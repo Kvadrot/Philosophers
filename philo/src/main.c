@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:08:18 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/27 11:04:00 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/27 17:04:12 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,12 +122,14 @@ int ft_launch_simulation(t_config **config)
     (*config)->initial_time = ft_get_now_stamp_mls();
     while (i < (*config)->philo_number)
     {
-       if (pthread_create(&(temp_philo->philo_thread), NULL, &(ft_routine), temp_philo) != 0)
-       {
+        temp_philo->last_meal_time =(*config)->initial_time;
+        if (pthread_create(&(temp_philo->philo_thread), NULL, &(ft_routine), temp_philo) != 0)
+        {
             //TODO: terminate created threads
             ft_cleanup_threads((*config)->philo_list, temp_philo, config);
             return (2);
-       }
+        }
+        // usleep(1);
         temp_philo = temp_philo->next;
         i++;
     }

@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/25 14:59:29 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/27 13:26:46 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ t_config    *ft_init_config(char **argv);
 void *ft_track_simualtion(void *arg);
 
 //Print master
-void    ft_print_master(t_philo *philo, int philo_state);
+void    ft_print_master(t_config *config, t_philo *philo, int philo_state);
 
 //Time Master
 long long   ft_get_now_stamp_mls(void);

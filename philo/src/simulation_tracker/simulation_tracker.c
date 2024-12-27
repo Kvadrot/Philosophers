@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/24 14:10:09 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/26 13:16:05 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/27 17:11:52 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,18 @@ bool ft_check_is_starving(t_config *config, t_philo* temp_philo)
 
     pthread_mutex_lock(&temp_philo->last_meal_time_mutex);
     elapsed_time = ft_get_elapsed_time(temp_philo->last_meal_time);
+    pthread_mutex_unlock(&temp_philo->last_meal_time_mutex);
+
     if (elapsed_time > config->time_to_die)
     {
         now_time_stamp = ft_get_now_stamp_mls();
         pthread_mutex_lock(&config->print_mutex);
         printf("%lld %d is dead\n", ft_get_elapsed_time(config->initial_time), temp_philo->id);
+        printf("elapsed_time = %lld, temp_philo->last_meal_time = %lld\n",elapsed_time, temp_philo->last_meal_time);
         pthread_mutex_unlock(&config->print_mutex);
-        pthread_mutex_unlock(&temp_philo->last_meal_time_mutex);
+        // pthread_mutex_unlock(&temp_philo->last_meal_time_mutex);
         return (true);
     }
-    pthread_mutex_unlock(&temp_philo->last_meal_time_mutex);
     return (false);
 }
 

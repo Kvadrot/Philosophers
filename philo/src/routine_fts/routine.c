@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 19:51:59 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/27 11:03:21 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/27 19:04:09 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 //  6) The philosopher unlocks their first fork.
 // =================================================================================
 
-void ft_eat_routine(t_philo *philo)
+void ft_eat_routine(t_config *config ,t_philo *philo)
 {
     pthread_mutex_t *first_fork;
     pthread_mutex_t *second_fork;
@@ -49,7 +49,7 @@ void ft_eat_routine(t_philo *philo)
         pthread_mutex_unlock(first_fork);
         return;
     }
-    ft_print_master(philo, FORK);
+    ft_print_master(config, philo, FORK);
 
     pthread_mutex_lock(second_fork);
     if (ft_check_exit(philo->root_config))
@@ -58,29 +58,42 @@ void ft_eat_routine(t_philo *philo)
         pthread_mutex_unlock(first_fork);
         return;
     }
-    ft_print_master(philo, FORK);
+    ft_print_master(config, philo, FORK);
 
     // Eating phase
-    ft_print_master(philo, EAT);
-    philo->last_meal_time = ft_get_now_stamp_mls(); // Update last meal time
-    philo->taken_meals_number += 1;
+    pthread_mutex_lock(&philo->last_meal_time_mutex);
+    ft_print_master(config, philo, EAT);
+    philo->last_meal_time = ft_get_now_stamp_mls();
+    pthread_mutex_unlock(&philo->last_meal_time_mutex);
+    
+    pthread_mutex_lock(&philo->taken_meals_number_mutex);
+        philo->taken_meals_number += 1;
+    pthread_mutex_unlock(&philo->taken_meals_number_mutex);
     usleep(ft_convert_mls_into_mcrs(philo->root_config->time_to_eat));
 
     // Unlock forks in reverse order
-    pthread_mutex_unlock(second_fork);
     pthread_mutex_unlock(first_fork);
+    pthread_mutex_unlock(second_fork);
 }
 
-void ft_think_routine(t_philo *philo)
+void ft_think_routine(t_config *config, t_philo *philo)
 {
-    ft_print_master(philo, THINK);
+    long long time_to_think;
+    long long multiplyer;
+    
+    if (ft_check_exit(philo->root_config))
+        return;
+    multiplyer = 1 + (config->philo_number % 2);
+    ft_print_master(config, philo, THINK);
+    time_to_think = (philo->root_config->time_to_eat * multiplyer) - config->time_to_sleep;
+    usleep(ft_convert_mls_into_mcrs(time_to_think));
 }
 
-void ft_sleep_routine(t_philo *philo)
+void ft_sleep_routine(t_config *config, t_philo *philo)
 {
     if (ft_check_exit(philo->root_config))
         return;
-    ft_print_master(philo, SLEEP);
+    ft_print_master(config, philo, SLEEP);
     usleep(ft_convert_mls_into_mcrs(philo->root_config->time_to_sleep));
 }
 
@@ -92,20 +105,16 @@ void ft_sleep_routine(t_philo *philo)
     philo = (t_philo *)arg;
     cp_config = philo->root_config;
     // ft_synchronize_philosophers(philo);
-    
+
     pthread_mutex_lock(&philo->last_meal_time_mutex);
     philo->last_meal_time = ft_get_now_stamp_mls();
     pthread_mutex_unlock(&philo->last_meal_time_mutex);
     
     while ((ft_check_exit(cp_config) == false))
     {
-        ft_eat_routine(philo);
-        if (ft_check_exit(cp_config) == true)
-            return (0);
-        ft_sleep_routine(philo);
-        if (ft_check_exit(cp_config) == true)
-            return (0);
-        ft_think_routine(philo);
+        ft_eat_routine(cp_config, philo);
+        ft_sleep_routine(cp_config, philo);
+        ft_think_routine(cp_config, philo);
     }
     return (0);
  }
