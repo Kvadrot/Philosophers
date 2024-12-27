@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 19:51:59 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/25 15:54:00 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/27 11:03:21 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void ft_eat_routine(t_philo *philo)
     pthread_mutex_t *second_fork;
 
     // Always lock the fork with the smaller address first
-    if (philo->own_fork < philo->neighbor_fork)
+    if (philo->id % 2 == 0)
     {
         first_fork = philo->own_fork;
         second_fork = philo->neighbor_fork;
@@ -63,6 +63,7 @@ void ft_eat_routine(t_philo *philo)
     // Eating phase
     ft_print_master(philo, EAT);
     philo->last_meal_time = ft_get_now_stamp_mls(); // Update last meal time
+    philo->taken_meals_number += 1;
     usleep(ft_convert_mls_into_mcrs(philo->root_config->time_to_eat));
 
     // Unlock forks in reverse order
@@ -70,42 +71,11 @@ void ft_eat_routine(t_philo *philo)
     pthread_mutex_unlock(first_fork);
 }
 
-// void ft_eat_routine(t_philo *philo)
-// {
-//     pthread_mutex_t *first_fork;
-//     pthread_mutex_t *second_fork;
-//     if (philo->id < (philo->id + 1) % philo->root_config->philo_number)
-//     // if (philo->id % 2 != 0)
-//     {
-//         first_fork = philo->own_fork;
-//         second_fork = philo->neighbor_fork;
-//     }
-//     else
-//     {
-//         first_fork = philo->neighbor_fork;
-//         second_fork = philo->own_fork;
-//     }
-//     pthread_mutex_lock(first_fork);
-//     ft_print_master(philo, FORK);
-//     pthread_mutex_lock(second_fork);
-//     ft_print_master(philo, FORK);
-//     ft_print_master(philo, EAT);
-//     usleep(ft_convert_mls_into_mcrs(philo->root_config->time_to_eat));
-//     pthread_mutex_unlock(second_fork);
-//     pthread_mutex_unlock(first_fork);
-// }
-
-
 void ft_think_routine(t_philo *philo)
 {
     ft_print_master(philo, THINK);
 }
 
-// void ft_sleep_routine(t_philo *philo)
-// {
-//     ft_print_master(philo, SLEEP);
-//     usleep(ft_convert_mls_into_mcrs(philo->root_config->time_to_sleep));
-// }
 void ft_sleep_routine(t_philo *philo)
 {
     if (ft_check_exit(philo->root_config))
@@ -114,16 +84,6 @@ void ft_sleep_routine(t_philo *philo)
     usleep(ft_convert_mls_into_mcrs(philo->root_config->time_to_sleep));
 }
 
-// @MARK: ft_launch_simulation
-// =================================================================================
-// Descritption: 
-//      Simulates philo routine: eat -> think -> sleep
-// How_it_works:
-//      1) 
-//      2) 
-//      3) 
-// =================================================================================
-
  void *ft_routine(void *arg)
  {
     t_philo *philo;
@@ -131,20 +91,18 @@ void ft_sleep_routine(t_philo *philo)
     
     philo = (t_philo *)arg;
     cp_config = philo->root_config;
-    ft_synchronize_philosophers(philo);
-    philo->last_meal_time = ft_get_now_stamp_mls();
+    // ft_synchronize_philosophers(philo);
     
-    if (philo->id % 2 != 0)
-        ft_eat_routine(philo);
-    else
-        ft_think_routine(philo);
-
+    pthread_mutex_lock(&philo->last_meal_time_mutex);
+    philo->last_meal_time = ft_get_now_stamp_mls();
+    pthread_mutex_unlock(&philo->last_meal_time_mutex);
+    
     while ((ft_check_exit(cp_config) == false))
     {
-        ft_sleep_routine(philo);
+        ft_eat_routine(philo);
         if (ft_check_exit(cp_config) == true)
             return (0);
-        ft_eat_routine(philo);
+        ft_sleep_routine(philo);
         if (ft_check_exit(cp_config) == true)
             return (0);
         ft_think_routine(philo);
