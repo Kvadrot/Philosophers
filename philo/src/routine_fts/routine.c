@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 19:51:59 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/27 19:04:09 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/28 16:07:34 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,15 +78,11 @@ void ft_eat_routine(t_config *config ,t_philo *philo)
 
 void ft_think_routine(t_config *config, t_philo *philo)
 {
-    long long time_to_think;
-    long long multiplyer;
     
     if (ft_check_exit(philo->root_config))
         return;
-    multiplyer = 1 + (config->philo_number % 2);
     ft_print_master(config, philo, THINK);
-    time_to_think = (philo->root_config->time_to_eat * multiplyer) - config->time_to_sleep;
-    usleep(ft_convert_mls_into_mcrs(time_to_think));
+    usleep(ft_convert_mls_into_mcrs(config->time_to_think));
 }
 
 void ft_sleep_routine(t_config *config, t_philo *philo)
@@ -109,12 +105,17 @@ void ft_sleep_routine(t_config *config, t_philo *philo)
     pthread_mutex_lock(&philo->last_meal_time_mutex);
     philo->last_meal_time = ft_get_now_stamp_mls();
     pthread_mutex_unlock(&philo->last_meal_time_mutex);
+
+	if (philo->id % 2 == 0)
+		usleep(ft_convert_mls_into_mcrs(cp_config->time_to_eat) / 2);
+
     
     while ((ft_check_exit(cp_config) == false))
     {
         ft_eat_routine(cp_config, philo);
         ft_sleep_routine(cp_config, philo);
         ft_think_routine(cp_config, philo);
-    }
+    }   
+
     return (0);
  }

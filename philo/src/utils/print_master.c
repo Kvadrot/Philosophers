@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 19:55:12 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/27 15:21:43 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/27 19:57:20 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void    ft_print_master(t_config *config, t_philo *philo, int philo_state)
         printf("%ld %d is sleeping\n", time_stamp, philo->id);
     if (philo_state == THINK)
         printf("%ld %d is thinking\n", time_stamp, philo->id);
-
+    if (philo_state == AWAKE)
+        printf("%ld %d is AWAKE\n", time_stamp, philo->id);
     pthread_mutex_unlock(&print_mutex);
 }

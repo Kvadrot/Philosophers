@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/24 14:23:04 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/24 16:29:41 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/28 10:20:49 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,13 @@ void ft_print_after_init_enteties(t_config *config)
         printf("\n");
         temp_philo = temp_philo->next;
         i++;
-    }
-    
-    
+    }   
+}
+
+void ft_debug_printer(t_config *config, char *str, long long num)
+{
+    pthread_mutex_t  print_mutex = config->print_mutex;
+    pthread_mutex_lock(&print_mutex);
+        printf("%s, %lld \n", str, num);
+    pthread_mutex_unlock(&print_mutex);
 }

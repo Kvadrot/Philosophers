@@ -6,7 +6,7 @@
 /*   By: ufo <ufo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:07:56 by ufo               #+#    #+#             */
-/*   Updated: 2024/12/27 13:26:46 by ufo              ###   ########.fr       */
+/*   Updated: 2024/12/28 15:58:27 by ufo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ enum philo_routine
     EAT,
     SLEEP,
     THINK,
-    DIE
+    DIE,
+    AWAKE
 };
 
 typedef struct s_philo {
@@ -52,10 +53,11 @@ typedef struct s_philo {
 
 typedef struct s_config {
     int philo_number;
-    int time_to_eat;
     int time_to_die;
+    int time_to_eat;
     int time_to_sleep;
     int meals_number;
+    int time_to_think;
     long long       initial_time;
     bool            must_exit;
     bool            is_synchronized;
@@ -99,11 +101,18 @@ void ft_synchronize_philosophers(t_philo *philo);
 //Routine
 void *ft_routine(void *arg);
 
-//Debugger
-void ft_print_after_init_enteties(t_config *config);
-
 //Utils
 bool ft_check_exit(t_config *config);
+
+
+///=============================///=============================///=============================
+//Debugger
+void ft_print_after_init_enteties(t_config *config);
+void ft_debug_printer(t_config *config, char *str, long long num);
+///=============================///=============================///=============================
+
+
+
 
 
 

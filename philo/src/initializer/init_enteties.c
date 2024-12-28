@@ -166,6 +166,12 @@ void ft_set_forks_for_philo(t_config **config)
     }
 }
 
+int	ft_min(int a, int b)
+{
+	if (a < b)
+		return (a);
+	return (b);
+}
 
 t_config *ft_init_config(char **argv) {
     t_config *config;
@@ -180,6 +186,11 @@ t_config *ft_init_config(char **argv) {
     config->time_to_die = atoi(argv[2]);
     config->time_to_eat = atoi(argv[3]);
     config->time_to_sleep = atoi(argv[4]);
+	if (config->philo_number % 2 && config->time_to_eat >= config->time_to_sleep)
+		config->time_to_think = config->time_to_eat - config->time_to_sleep
+			+ ft_min(config->time_to_eat, config->time_to_sleep) / 2;
+    else
+        config->time_to_think = 0;
     if (argv[5] != NULL)
         config->meals_number = atoi(argv[5]);
     else
